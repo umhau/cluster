@@ -24,9 +24,9 @@
 MACHINE_COUNT=$1-1
 
 USERNAME=root 
-PASSWORD=$3 
+PASSWORD=$2 
 
-HOSTNAME_BASE=$4 
+HOSTNAME_BASE=$3 
 HOSTNAME_ITERATORS=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
 
 HOSTFILE_CONTENTS="127.0.0.1     localhost\n"
@@ -38,7 +38,7 @@ HOSTFILE_CONTENTS="127.0.0.1     localhost\n"
 # check if machine count variable provided & verify sanity
 if [[ ! $1 =~ ^-?[0-9]+$ ]]
 then 
-    echo "USAGE: bash create_hosts_file.sh [MACHINE_COUNT] [USERNAME] [PASSWORD] [HOSTNAME_BASE]"
+    echo "USAGE: bash create_hosts_file.sh [MACHINE_COUNT] [PASSWORD] [HOSTNAME_BASE]"
     exit 0
 fi
 
@@ -69,7 +69,7 @@ do
     IP=$(getent hosts $HOSTNAME | awk '{ print $1 }')
 
     # add to the hostfile
-    HOSTFILE_CONTENTS+="$IP $HOSTNAME\n"
+    HOSTFILE_CONTENTS+="$IP $HOSTNAME\\n"
 
 done
 
@@ -78,8 +78,7 @@ echo -e $HOSTFILE_CONTENTS
 echo -n "[ENTER] TO UPLOAD, [CTRL-C] TO CANCEL" 
 read
 
-# save hostfile to /tmp folder
-echo -e $HOSTFILE_CONTENTS > /tmp/hosts
+echo -n "INSTALL PROCESS COMPLETE ON: "
 
 # upload to each machine in the cluster ---------------------------------------
 for ((i=0;i<=MACHINE_COUNT;i++))
@@ -87,17 +86,14 @@ do
     HOSTNAME=$HOSTNAME_BASE${HOSTNAME_ITERATORS[i]}
 
     # make sure there's a backup of the original hosts file
-    if ! sshpass -p "$PASSWORD" ssh -q $HOSTNAME [[ -f "/home/$USERNAME/hosts.bak" ]]
+    if ! sshpass -p "$PASSWORD" ssh -q $HOSTNAME [[ -f "/root/hosts.bak" ]]
     then 
-        sshpass -p "$PASSWORD" ssh $USERNAME@$HOSTNAME "cp /etc/hosts /home/$USERNAME/hosts.bak"
-        echo -e "HOSTFILE BACKED UP\n"
+        sshpass -p "$PASSWORD" ssh $USERNAME@$HOSTNAME "cp /etc/hosts /root/hosts.bak"
     fi
     # upload the new hosts file
-    sshpass -p "$PASSWORD" ssh $USERNAME@$HOSTNAME "sudo echo $HOSTFILE_CONTENTS > /etc/hosts"
-    # sshpass -p "$PASSWORD" scp /tmp/hosts $USERNAME@$HOSTNAME:/etc/hosts
+    sshpass -p "$PASSWORD" ssh $USERNAME@$HOSTNAME "sudo printf '$HOSTFILE_CONTENTS' > /etc/hosts"
+    echo -n "$HOSTNAME  "
 
 done
 
-rm /tmp/hosts
-
-echo -e "NEW HOSTFILES INSTALLED\n"
+echo -e "\n\nNEW HOSTFILES INSTALLED\n"
