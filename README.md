@@ -10,4 +10,4 @@ To see the details of implementing the above, see:
 
 ==============================================================================================
 
-
+USAGE: run set_up_cluster.sh [MACHINE_COUNT] [PASSWORD] [HOSTNAME_BASE] [NEW USER] [NEW USER PASSWORD]
