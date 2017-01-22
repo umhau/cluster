@@ -9,7 +9,7 @@
 #
 #   This cannot be run from a computer within the cluster.  
 # 
-#   This only allows for alphanumeric iterators.
+#   Iterators must start at 0 and increase in single unit steps.  
 # 
 #   The username must be root, and the root user must be enabled on each 
 #   machine.  This is the only way to programmatically modify the 
@@ -27,7 +27,6 @@ USERNAME=root
 PASSWORD=$2 
 
 HOSTNAME_BASE=$3 
-HOSTNAME_ITERATORS=(a b c d e f g h i j k l m n o p q r s t u v w x y z)
 
 HOSTFILE_CONTENTS="127.0.0.1     localhost\n"
 
@@ -46,10 +45,10 @@ fi
 echo -e "\nPLEASE CONFIRM VARIABLES:\n"
 echo -e "USERNAME:    $USERNAME"
 echo -e "PASSWORD:    $PASSWORD"
-echo -n "MACHINES:    $HOSTNAME_BASE${HOSTNAME_ITERATORS[0]}"
+echo -n "MACHINES:    $HOSTNAME_BASE"0
 for ((i=1;i<=MACHINE_COUNT;i++))
 do
-    echo -n " | $HOSTNAME_BASE${HOSTNAME_ITERATORS[i]}"
+    echo -n " | $HOSTNAME_BASE"$i
 done 
 echo -e "\n\n[ENTER] TO CONTINUE, [CTRL-C] TO CANCEL" 
 read
@@ -59,11 +58,10 @@ if ! hash sshpass 2>/dev/null; then
     sudo apt-get install sshpass
 fi
 
-
 # create the hostfile, one machine at a time ----------------------------------
 for ((i=0;i<=MACHINE_COUNT;i++))
 do
-    HOSTNAME=$HOSTNAME_BASE${HOSTNAME_ITERATORS[i]}
+    HOSTNAME=$HOSTNAME_BASE$i
 
     # get the ip of each computer
     IP=$(getent hosts $HOSTNAME | awk '{ print $1 }')
@@ -83,7 +81,7 @@ echo -n "INSTALL PROCESS COMPLETE ON: "
 # upload to each machine in the cluster ---------------------------------------
 for ((i=0;i<=MACHINE_COUNT;i++))
 do
-    HOSTNAME=$HOSTNAME_BASE${HOSTNAME_ITERATORS[i]}
+    HOSTNAME=$HOSTNAME_BASE$i
 
     # make sure there's a backup of the original hosts file
     if ! sshpass -p "$PASSWORD" ssh -q $HOSTNAME [[ -f "/root/hosts.bak" ]]
