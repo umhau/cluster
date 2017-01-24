@@ -1,4 +1,6 @@
 
+NOTE: Except for set_up_hostfiles.sh, these scripts DO NOT WORK.  In the interest of time I am not debugging them, and am Moving On with my cluster.
+
 This set of scripts picks up after:
 * Ubuntu Server 16.04.1 LTS has been installed
 * all computers have been assembled, added to the network and are accessible through ssh
