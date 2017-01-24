@@ -41,6 +41,9 @@ then
     exit 0
 fi
 
+# head off frequent problem
+echo -e "\nNOTE: IF PROCESS HANGS, ENSURE THAT LOGIN ON ALL REMOTE MACHINES IS SEAMLESS"
+
 # request confirmation
 echo -e "\nPLEASE CONFIRM VARIABLES:\n"
 echo -e "USERNAME:    $USERNAME"
