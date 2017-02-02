@@ -17,3 +17,4 @@ USAGE:
     bash create_hosts_file.sh [MACHINE_COUNT] [ROOT PASSWORD] [HOSTNAME_BASE]
     bash test_configuration.sh [USER] [PASSWORD] [MASTER NODE HOSTNAME] [TOTAL CORES]
     
+Extra! Extra! Read all about it!
